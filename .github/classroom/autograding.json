@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "verifytests caching leaderboard",
+      "setup": "",
+      "run": "./gradlew verifytests-caching-leaderboard",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "verifytests caching goodreads",
+      "setup": "",
+      "run": "./gradlew verifytests-caching-goodreads",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    }
+  ]
+}
