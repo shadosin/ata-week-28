@@ -1,0 +1,89 @@
+import groovy.xml.XmlSlurper
+
+plugins {
+    id 'ata-curriculum.snippets-conventions'
+}
+
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/KenzieAcademy-SoftwareEngineering/kenzie-java-test-infrastructure")
+        credentials {
+            username = "kenzie-gradle"
+            password = "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"
+        }
+    }
+}
+
+dependencies {
+    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
+    testImplementation files('../../gradle/lib/testinfrastructure-1.0.1.jar')
+
+    implementation group: 'redis.clients', name: 'jedis', version: '3.0.1'
+    implementation 'com.google.dagger:dagger:2.30'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.30'
+}
+
+checkstyle {
+    def suppressionFile = rootProject.file('Utilities/ATACheckstyle/configuration/checkstyle/unit1/suppressions.xml')
+    configProperties.put('checkstyle.suppression.filter', suppressionFile)
+}
+
+def wflowToTestsMap = [
+        'caching-leaderboard-phase1test': [
+                'com.kenzie.caching.leaderboard.CacheClientTest',
+                'com.kenzie.caching.leaderboard.CachingLeaderboardDaoTest',
+                'com.kenzie.caching.leaderboard.CachingLeaderboardFunctionalTest',
+        ],
+        'caching-leaderboard-phase2test': [
+                'com.kenzie.caching.leaderboard.CacheClientInvalidationTest',
+                'com.kenzie.caching.leaderboard.IntegrationTest'
+        ]
+]
+
+wflowToTestsMap.forEach { wflowName, testList ->
+    tasks.register(wflowName) {
+        dependsOn wflowtest
+        test.doFirst {
+            filter {
+                testList.each { includeTestsMatching it }
+            }
+        }
+        test.finalizedBy('copyTestResults')
+    }
+}
+
+test.finalizedBy('copyTestResults')
+
+tasks.register('copyTestResults', Copy) {
+    from(layout.buildDirectory.dir("test-results")) {
+        include "test/TEST-com.kenzie.caching.leaderboard.CacheClientTest.xml"
+        include "test/TEST-com.kenzie.caching.leaderboard.CachingLeaderboardDaoTest.xml"
+        include "test/TEST-com.kenzie.caching.leaderboard.CachingLeaderboardFunctionalTest.xml"
+        include "test/TEST-com.kenzie.caching.leaderboard.CacheClientInvalidationTest.xml"
+        include "test/TEST-com.kenzie.caching.leaderboard.IntegrationTest.xml"
+    }
+    into layout.projectDirectory.dir("test-results")
+}
+
+def integrationResults = ["test/TEST-com.kenzie.caching.leaderboard.CacheClientTest.xml",
+                          "test/TEST-com.kenzie.caching.leaderboard.CachingLeaderboardDaoTest.xml",
+                          "test/TEST-com.kenzie.caching.leaderboard.CachingLeaderboardFunctionalTest.xml",
+                          "test/TEST-com.kenzie.caching.leaderboard.CacheClientInvalidationTest.xml",
+                          "test/TEST-com.kenzie.caching.leaderboard.IntegrationTest.xml"]
+
+tasks.register('verifytests-caching-leaderboard') {
+    dependsOn tasks.copyTestResults
+    doLast {
+        integrationResults.forEach {
+            try {
+                def testResult = layout.projectDirectory.dir("test-results").file(it).asFile
+                def attributesMap = new XmlSlurper().parse(testResult).attributes()
+                assert attributesMap.get("skipped") == "0" : "There are skipped tests"
+                assert attributesMap.get("failures") == "0": "There are failing tests"
+                assert attributesMap.get("errors") == "0" : "There are tests with errors"
+            } catch (Exception e) {
+                assert false : "Failed to find test file: " + it
+            }
+        }
+    }
+}

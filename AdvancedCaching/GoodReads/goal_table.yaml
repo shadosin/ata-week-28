@@ -1,0 +1,163 @@
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: dynamodbAccessRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: "*"
+  InitFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: >
+          const AWS = require("aws-sdk");
+          const response = require('./cfn-response');
+          const docClient = new AWS.DynamoDB.DocumentClient();
+          exports.handler = function(event, context) {
+            console.log(JSON.stringify(event,null,2));
+            var params = {
+              RequestItems: {
+                "Caching-ReadingGoals": [
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "8f4d9aa0-7180-4f23-8a59-8cc5a0786b44",
+                        year: 2020,
+                        goal: 18
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "8f4d9aa0-7180-4f23-8a59-8cc5a0786b44",
+                        year: 2019,
+                        goal: 10
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "8f4d9aa0-7180-4f23-8a59-8cc5a0786b44",
+                        year: 2014,
+                        goal: 12
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "425c0e68-717c-49ef-9405-259453a5180d",
+                        year: 2020,
+                        goal: 52
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "63c12584-0d2c-4396-8a7a-076ee99a6f93",
+                        year: 2020,
+                        goal: 25
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "5e591b56-f296-4dc6-8e6f-63aec2288667",
+                        year: 2020,
+                        goal: 30
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "61afe3fa-b839-47ea-b9fd-cb5f97021345",
+                        year: 2020,
+                        goal: 24
+                      }
+                    }
+                  },
+                  {
+                    PutRequest: {
+                      Item: {
+                        userId: "7d3e9339-33b2-4f14-a426-8e000dc07ad7",
+                        year: 2020,
+                        goal: 6
+                      }
+                    }
+                  }
+                ]
+              }
+            };
+            docClient.batchWrite(params, function(err, data) {
+              if (err) {
+                response.send(event, context, "FAILED", {});
+              } else {
+                response.send(event, context, "SUCCESS", {});
+              }
+            });
+          };
+      Handler: index.handler
+      Role:
+        Fn::GetAtt: [ LambdaRole , "Arn" ]
+      Runtime: nodejs14.x
+      Timeout: 60
+  CachingClassroomReadingGoalTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      "AttributeDefinitions" : [
+        {
+          "AttributeName" : "userId",
+          "AttributeType" : "S"
+        },
+        {
+          "AttributeName": "year",
+          "AttributeType": "N"
+        }
+      ]
+      "KeySchema" : [
+        {
+          "AttributeName" : "userId",
+          "KeyType" : "HASH"
+        },
+        {
+          "AttributeName": "year",
+          "KeyType": "RANGE"
+        }
+      ]
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      BillingMode: PAY_PER_REQUEST
+      TableName: "Caching-ReadingGoals"
+  InitializeEventsTable:
+    Type: Custom::InitFunction
+    DependsOn: CachingClassroomReadingGoalTable
+    Properties:
+      ServiceToken:
+        Fn::GetAtt: [ InitFunction , "Arn" ]
+      DynamoTableName:
+        Ref: CachingClassroomReadingGoalTable
