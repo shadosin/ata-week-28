@@ -1,5 +1,6 @@
 package com.kenzie.caching.leaderboard;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
@@ -28,6 +29,12 @@ public class CacheClient {
      * @param value   String representing the value set in the cache
      */
     public void setValue(String key, int seconds, String value) {
+        if(key == null){
+            throw new IllegalArgumentException("key cannot be null");
+        }
+        try(Jedis jedis = pool.getResource()){
+            jedis.setex(key, seconds, value);
+        }
     }
 
     /**
@@ -39,7 +46,13 @@ public class CacheClient {
      * @return String representing the value stored in the cache or an empty Optional in the case of a cache miss.
      */
     public Optional<String> getValue(String key) {
-        return null;
+        if(key == null){
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        try(Jedis jedis = pool.getResource()){
+            return Optional.ofNullable(jedis.get(key));
+        }
+
     }
 
     /**
@@ -51,6 +64,16 @@ public class CacheClient {
      * @return true on invalidation, false if key does not exist in cache
      */
     public boolean invalidate(String key) {
-        return false;
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        try (Jedis jedis = pool.getResource()) {
+            long deletedKeys = jedis.del(key);
+            if (deletedKeys > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }

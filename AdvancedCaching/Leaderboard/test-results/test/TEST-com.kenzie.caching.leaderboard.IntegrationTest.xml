@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kenzie.caching.leaderboard.IntegrationTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-11-14T13:55:11" hostname="BANANACOMP" time="10.164">
+  <properties/>
+  <testcase name="invalidate_whenKeyExists_deletesKey()" classname="com.kenzie.caching.leaderboard.IntegrationTest" time="10.143"/>
+  <testcase name="startGame_InvalidatesInCorrectOrder()" classname="com.kenzie.caching.leaderboard.IntegrationTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kenzie.caching.leaderboard.CacheClientTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2023-11-14T13:54:42" hostname="BANANACOMP" time="0.015">
+  <properties/>
+  <testcase name="setValue_givenCacheEntry_storesInRedis()" classname="com.kenzie.caching.leaderboard.CacheClientTest" time="0.005"/>
+  <testcase name="getValue_cacheMiss_returnsEmptyOptional()" classname="com.kenzie.caching.leaderboard.CacheClientTest" time="0.004"/>
+  <testcase name="getValue_nullKey_throwsIllegalArgumentException()" classname="com.kenzie.caching.leaderboard.CacheClientTest" time="0.002"/>
+  <testcase name="getValue_cacheHit_getsData()" classname="com.kenzie.caching.leaderboard.CacheClientTest" time="0.002"/>
+  <testcase name="setValue_nullKey_throwsIllegalArgumentException()" classname="com.kenzie.caching.leaderboard.CacheClientTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

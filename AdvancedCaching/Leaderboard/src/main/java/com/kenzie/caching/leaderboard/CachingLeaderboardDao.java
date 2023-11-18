@@ -1,5 +1,6 @@
 package com.kenzie.caching.leaderboard;
 
+import com.kenzie.caching.leaderboard.resources.datasource.Entry;
 import com.kenzie.caching.leaderboard.resources.datasource.LeaderboardDao;
 
 import javax.inject.Inject;
@@ -30,6 +31,29 @@ public class CachingLeaderboardDao {
      * @return long representing score associated with username
      */
     public long getHighScore(String username) {
-        return 0;
+        return cache.getValue(username)
+                .map(Long::valueOf)
+                .orElseGet(() -> getHighSCoreFromDataBase(username));
+    }
+    private long getHighSCoreFromDataBase(String username){
+        Entry dataValue = dataSource.getEntry(username);
+        long highScore = dataValue.getScore();
+        cache.setValue(username, 300, String.valueOf(highScore));
+        return highScore;
+    }
+    public void checkHighScore(String username){
+        Entry dataStore = dataSource.getEntry(username);
+        long storedScore = cache.getValue(username).map(Long::valueOf).orElse(0L);
+        long dataScore = dataStore.getScore();
+        if(dataScore > storedScore){
+            cache.invalidate(username);
+            cache.setValue(username, 300, String.valueOf(dataScore));
+        }
+    }
+    public void dumpScore(String username){
+        if(cache.getValue(username).isPresent()){
+            cache.invalidate(username);
+        }
     }
 }
+

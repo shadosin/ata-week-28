@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kenzie.caching.goodreads.integration.Phase4Test" tests="8" skipped="0" failures="0" errors="0" timestamp="2023-11-15T21:03:17" hostname="BANANACOMP" time="54.887">
+  <properties/>
+  <testcase name="doNotInvalidateCache_getGoalProgress_itemInCacheCache()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="7.428"/>
+  <testcase name="invalidateCache_markBookAsRead_emptyCache()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="5.293"/>
+  <testcase name="doNotInvalidateCache_setGoal_itemInCacheCache()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="5.294"/>
+  <testcase name="invalidateCache_updateReadingFinished_onlyTouchesCorrectUser()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="10.513"/>
+  <testcase name="invalidateCache_updateReadingFinished_onlyTouchesCorrectYear()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="10.507"/>
+  <testcase name="doNotInvalidateCache_markBookAsCurrentlyReading_itemInCacheCache()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="5.287"/>
+  <testcase name="doNotInvalidateCache_updateReadingNoFinished_itemInCacheCache()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="5.292"/>
+  <testcase name="invalidateCache_updateReadingFinished_emptyCache()" classname="com.kenzie.caching.goodreads.integration.Phase4Test" time="5.273"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+]]></system-err>
+</testsuite>
